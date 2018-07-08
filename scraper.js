@@ -74,7 +74,7 @@ phantom.create().then(function(ph){
     return _ph.createPage();
 }).then(function(page){
     _page = page;
-    console.log("Here 2");
+    console.log("Here 2: " + url);
     return _page.open(url);
 }).then(function(status){
     console.log("Here 3");
@@ -90,7 +90,7 @@ phantom.create().then(function(ph){
     console.log(e); 
 });
 console.log("Done.");
-return;    
+// return;    
     
     
     requestPage(url, body => {
