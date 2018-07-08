@@ -5,10 +5,10 @@
 // 8th July 2018
 
 let cheerio = require("cheerio");
-let request = require("request");
+let request = require("request").debug = true;
 let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
-let moment = require("moment").debug = true;
+let moment = require("moment");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -52,7 +52,7 @@ function insertRow(database, developmentApplication) {
     
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "SSLv23_method" } }, (error, response, body) => {
+    request.get({ uri: url, agentOptions: { secureProtocol: "SSLv1_method" } }, (error, response, body) => {
         if (error)
             console.log(`Error requesting page ${url}: ${error}`);
         else
