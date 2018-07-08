@@ -9,6 +9,7 @@ let request = require("request");
 let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
 let moment = require("moment");
+let phantom = require("phantom");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -66,7 +67,32 @@ function run(database) {
     let url = DevelopmentApplicationsUrl;
     let parsedUrl = new urlparser.URL(url);
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
-
+    
+phantom.create().then(function(ph){
+    _ph = ph;
+    console.log("Here 1");    
+    return _ph.createPage();
+}).then(function(page){
+    _page = page;
+    console.log("Here 2");
+    return _page.open(url);
+}).then(function(status){
+    console.log("Here 3");
+    console.log(status);
+    return _page.property('content')
+}).then(function(content){
+    console.log("Here 4");
+    console.log(content);
+    _page.close();
+    _ph.exit();
+}).catch(function(e){
+    console.log("Here 5");
+    console.log(e); 
+});
+console.log("Done.");
+return;    
+    
+    
     requestPage(url, body => {
         // Use cheerio to find all development applications listed in the page.
  
