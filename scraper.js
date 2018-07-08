@@ -75,10 +75,12 @@ phantom.create().then(function(ph){
 }).then(function(page){
     _page = page;
     console.log("Here 2: " + url);
-    page.onResourceError = function(resourceError) {
+    page.property('onResourceError', function(resourceError) {
         page.reason = resourceError.errorString;
         page.reason_url = resourceError.url;
-    };
+        console.log("ErrorTest: " + resourceError.errorString);
+        console.log("ErrorTest: " + resourceError.url);
+    });
     return _page.open(url,
         function (status) {
         if (status !== 'success') {
