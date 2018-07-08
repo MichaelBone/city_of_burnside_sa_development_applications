@@ -83,8 +83,8 @@ phantom.create().then(function(ph){
 }).then(function(content){
     console.log("Here 4");
     console.log(content);
-    _page.close();
-    _ph.exit();
+    // _page.close();
+    // _ph.exit();
 }).catch(function(e){
     console.log("Here 5");
     console.log(e); 
