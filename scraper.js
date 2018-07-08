@@ -52,7 +52,7 @@ function insertRow(database, developmentApplication) {
     
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "TLSv1_method" } }, (error, response, body) => {
+    request.get({ uri: url, agentOptions: { secureProtocol: "TLSv1_2_method" } }, (error, response, body) => {
         if (error)
             console.log(`Error requesting page ${url}: ${error}`);
         else
