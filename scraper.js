@@ -10,6 +10,8 @@ let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
 let moment = require("moment");
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au:443/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
 
@@ -52,7 +54,7 @@ function insertRow(database, developmentApplication) {
     
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "SSLv3_method", strictSSL: false, securityOptions: "", secureOptions: "" } }, (error, response, body) => {
+    request.get({ uri: url, agentOptions: { secureProtocol: "TLSv1_method", strictSSL: false } }, (error, response, body) => {
         if (error)
             console.log(`Error requesting page ${url}: ${error}`);
         else
