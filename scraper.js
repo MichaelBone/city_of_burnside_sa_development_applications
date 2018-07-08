@@ -10,6 +10,7 @@ let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
 let moment = require("moment");
 let fs = require("fs");
+let https = require("https")
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -55,11 +56,13 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "TLSv1_2_client_method", strictSSL: false, rejectUnauthorized: false, cert: fs.readFileSync("Test.crt") } }, (error, response, body) => {
-        if (error)
-            console.log(`Error requesting page ${url}: ${error}`);
-        else
-            callback(body);
+    https.get(url, (error, response, body) => {
+        //callback(error);
+        error.on('data', (d) => callback(d));
+        // if (error)
+        //     console.log(`Error requesting page ${url}: ${error}`);
+        // else
+        //     callback(body);
     });
 
     // request(url, (error, response, body) => {
