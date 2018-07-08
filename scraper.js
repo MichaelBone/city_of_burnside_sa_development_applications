@@ -1,59 +1,116 @@
-// This is a template for a Node.js scraper on morph.io (https://morph.io)
+// Parses the lodged development application PDF files found at the South Australian City
+// of Burside web site and places them in a database.
+//
+// Michael Bone
+// 8th July 2018
 
-var cheerio = require("cheerio");
-var request = require("request");
-var sqlite3 = require("sqlite3").verbose();
+let cheerio = require("cheerio");
+let request = require("request");
+let sqlite3 = require("sqlite3").verbose();
+let moment = require("moment");
 
-function initDatabase(callback) {
-	// Set up sqlite database.
-	var db = new sqlite3.Database("data.sqlite");
-	db.serialize(function() {
-		db.run("CREATE TABLE IF NOT EXISTS data (name TEXT)");
-		callback(db);
-	});
+const LodgedApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
+const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
+
+// Sets up an sqlite database.
+
+function initializeDatabase(callback) {
+    let database = new sqlite3.Database("data.sqlite");
+    database.serialize(() => {
+        database.run("create table if not exists [data] ([council_reference] text primary key, [address] text, [description] text, [info_url] text, [comment_url] text, [date_scraped] text, [date_received] text, [on_notice_from] text, [on_notice_to] text)");
+        callback(database);
+    });
 }
 
-function updateRow(db, value) {
-	// Insert some data.
-	var statement = db.prepare("INSERT INTO data VALUES (?)");
-	statement.run(value);
-	statement.finalize();
+// Inserts a row in the database if it does not already exist.
+
+function insertRow(database, developmentApplication) {
+    let sqlStatement = database.prepare("insert or ignore into [data] values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    sqlStatement.run([
+        developmentApplication.applicationNumber,
+        developmentApplication.address,
+        developmentApplication.reason,
+        developmentApplication.informationUrl,
+        developmentApplication.commentUrl,
+        developmentApplication.scrapeDate,
+        developmentApplication.lodgementDate,
+        null,
+        null
+    ], function(error, row) {
+        if (error)
+            console.log(error);
+        else {
+            if (this.changes > 0)
+                console.log(`    Inserted new application \"${developmentApplication.applicationNumber}\" into the database.`);
+            sqlStatement.finalize();  // releases any locks
+        }
+    });
 }
 
-function readRows(db) {
-	// Read some data.
-	db.each("SELECT rowid AS id, name FROM data", function(err, row) {
-		console.log(row.id + ": " + row.name);
-	});
+// Reads a page using a request.
+    
+function requestPage(url, callback) {
+    console.log(`Requesting page: ${url}`);
+    request(url, (error, response, body) => {
+        if (error)
+            console.log(`Error requesting page ${url}: ${error}`);
+        else
+            callback(body);
+    });
 }
 
-function fetchPage(url, callback) {
-	// Use request to read in pages.
-	request(url, function (error, response, body) {
-		if (error) {
-			console.log("Error requesting page: " + error);
-			return;
-		}
+// Parses the page at the specified URL.
 
-		callback(body);
-	});
+function parse(database, url) {
+    let parsedUrl = new urlparser.URL(url);
+    let baseUrl = parsedUrl.origin + parsedUrl.pathname;
+
+    requestPage(url, body => {
+        // Use cheerio to find all URLs that refer to development applications.
+ 
+        let developmentApplicationUrls = [];
+        let $ = cheerio.load(body);
+        $("div.list-container a").each((index, element) => {
+            let developmentApplicationUrl = new urlparser.URL(element.attribs.href, baseUrl);
+            if (!developmentApplicationUrls.some(url => url === developmentApplicationUrl.href))  // avoid duplicates
+                developmentApplicationUrls.push(developmentApplicationUrl.href);
+        });
+        console.log(`Found ${developmentApplicationUrls.length} development applications at ${url}.`);
+
+        // Read and parse each development application URL, extracting the development application text.
+
+        for (let developmentApplicationUrl of developmentApplicationUrls) {
+            console.log(`Parsing: ${developmentApplicationUrl}`);
+
+            let developmentApplications = [];
+            let haveApplicationNumber = false;
+            let haveAddress = false;
+            let applicationNumber = null;
+            let address = null;
+            let reason = null;
+            let informationUrl = developmentApplicationUrl;
+            let commentUrl = CommentUrl;
+            let scrapeDate = moment().format("YYYY-MM-DD");
+            let lodgementDate = null;
+
+            developmentApplications.push({
+                applicationNumber: applicationNumber,
+                address: address,
+                reason: reason,
+                informationUrl: informationUrl,
+                commentUrl: commentUrl,
+                scrapeDate: scrapeDate,
+                lodgementDate: ((lodgementDate === null) ? null : lodgementDate.format("YYYY-MM-DD")) });
+
+            // Insert all the development applications that were found into the database as
+            // rows in a table.  If the same development application number already exists on
+            // a row then that existing row will not be replaced.
+
+            console.log(`Found ${developmentApplications.length} development application(s).`)
+            for (let developmentApplication of developmentApplications)
+                insertRow(database, developmentApplication);
+        }
+    });
 }
 
-function run(db) {
-	// Use request to read in pages.
-	fetchPage("https://morph.io", function (body) {
-		// Use cheerio to find things in the page with css selectors.
-		var $ = cheerio.load(body);
-
-		var elements = $("div.media-body span.p-name").each(function () {
-			var value = $(this).text().trim();
-			updateRow(db, value);
-		});
-
-		readRows(db);
-
-		db.close();
-	});
-}
-
-initDatabase(run);
+initializeDatabase(run);
