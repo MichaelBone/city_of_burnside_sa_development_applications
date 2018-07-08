@@ -74,8 +74,21 @@ phantom.create().then(function(ph){
     return _ph.createPage();
 }).then(function(page){
     _page = page;
-    console.log("Here 2: " + "http://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification");
-    return _page.open("http://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification");
+    console.log("Here 2: " + url);
+    page.onResourceError = function(resourceError) {
+        page.reason = resourceError.errorString;
+        page.reason_url = resourceError.url;
+    };
+    return _page.open(url,
+        function (status) {
+        if (status !== 'success') {
+            console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
+            phantom.exit(1);
+        } else {
+            console.log("Successful page open.");
+            phantom.exit(0);
+        }
+    });
 }).then(function(status){
     console.log("Here 3");
     console.log(status);
