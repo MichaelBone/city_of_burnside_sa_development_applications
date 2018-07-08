@@ -54,7 +54,7 @@ function insertRow(database, developmentApplication) {
     
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "SSLv3_method", strictSSL: false } }, (error, response, body) => {
+    request.get({ uri: url, agentOptions: { strictSSL: false } }, (error, response, body) => {
         if (error)
             console.log(`Error requesting page ${url}: ${error}`);
         else
