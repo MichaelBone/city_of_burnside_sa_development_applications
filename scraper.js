@@ -75,6 +75,9 @@ phantom.create().then(function(ph){
 }).then(function(page){
     _page = page;
     console.log("Here 2: " + url);
+    page.customHeaders = {
+        "Connection": "keep-alive"
+    };
     page.on('onResourceError', function(resourceError) {
         page.reason = resourceError.errorString;
         page.reason_url = resourceError.url;
