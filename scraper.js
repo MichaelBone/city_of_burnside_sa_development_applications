@@ -8,7 +8,7 @@ let cheerio = require("cheerio");
 let request = require("request");
 let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
-let moment = require("moment");
+let moment = require("moment").debug = true;
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
