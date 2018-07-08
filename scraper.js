@@ -81,8 +81,8 @@ phantom.create().then(function(ph){
     page.on('onResourceError', function(resourceError) {
         page.reason = resourceError.errorString;
         page.reason_url = resourceError.url;
-        console.log("ErrorTest: " + resourceError.errorString);
-        console.log("ErrorTest: " + resourceError.url);
+        console.log("ErrorTest1: " + resourceError.errorString);
+        console.log("ErrorTest2: " + resourceError.url);
     });
     return _page.open(url,
         function (status) {
@@ -101,14 +101,14 @@ phantom.create().then(function(ph){
 }).then(function(content){
     console.log("Here 4");
     console.log(content);
-    // _page.close();
-    // _ph.exit();
+    _page.close();
+    _ph.exit();
 }).catch(function(e){
     console.log("Here 5");
     console.log(e); 
 });
 console.log("Done.");
-// return;    
+return;
     
     
     requestPage(url, body => {
