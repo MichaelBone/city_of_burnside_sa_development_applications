@@ -1,5 +1,5 @@
-// Parses the lodged development application PDF files found at the South Australian City
-// of Burside web site and places them in a database.
+// Parses the development application at the South Australian City of  web site and places them
+// in a database.  This is partly based on the scraper at https://github.com/LoveMyData/burnside.
 //
 // Michael Bone
 // 8th July 2018
@@ -7,9 +7,10 @@
 let cheerio = require("cheerio");
 let request = require("request");
 let sqlite3 = require("sqlite3").verbose();
+let urlparser = require("url");
 let moment = require("moment");
 
-const LodgedApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
+const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
 
 // Sets up an sqlite database.
@@ -33,9 +34,9 @@ function insertRow(database, developmentApplication) {
         developmentApplication.informationUrl,
         developmentApplication.commentUrl,
         developmentApplication.scrapeDate,
-        developmentApplication.lodgementDate,
         null,
-        null
+        null,
+        developmentApplication.onNoticeToDate
     ], function(error, row) {
         if (error)
             console.log(error);
@@ -61,55 +62,38 @@ function requestPage(url, callback) {
 
 // Parses the page at the specified URL.
 
-function parse(database, url) {
+function run(database) {
+    let url = DevelopmentApplicationsUrl;
     let parsedUrl = new urlparser.URL(url);
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
 
     requestPage(url, body => {
-        // Use cheerio to find all URLs that refer to development applications.
+        // Use cheerio to find all development applications listed in the page.
  
-        let developmentApplicationUrls = [];
         let $ = cheerio.load(body);
         $("div.list-container a").each((index, element) => {
-            let developmentApplicationUrl = new urlparser.URL(element.attribs.href, baseUrl);
-            if (!developmentApplicationUrls.some(url => url === developmentApplicationUrl.href))  // avoid duplicates
-                developmentApplicationUrls.push(developmentApplicationUrl.href);
+            // Each development application is listed with a link to another page which has the
+            // full development application details.
+
+            let developmentApplicationUrl = new urlparser.URL(element.attribs.href, baseUrl).href;
+            requestPage(developmentApplicationUrl, body => {
+                // Extract the details of the development application from the development
+                // application page and then insert those details into the database as a row
+                // in a table.  Note that the selectors used below are based on those from the
+                // https://github.com/LoveMyData/burnside scraper.
+
+                let $ = cheerio.load(body);
+
+                insertRow(database, {
+                    applicationNumber: $("span.field-label:contains('Application number') ~ span.field-value").text().trim(),
+                    address: $("span.field-label:contains('Address') ~ span.field-value").text().replace("View Map", "").trim(),
+                    reason: $("span.field-label:contains('Nature of development') ~ span.field-value").text().trim(),
+                    informationUrl: developmentApplicationUrl,
+                    commentUrl: CommentUrl,
+                    scrapeDate: moment().format("YYYY-MM-DD"),
+                    onNoticeToDate: moment($("h2.side-box-title:contains('Closing Date') + div").text().split(',')[0].trim(), "D MMMM YYYY", true).format("YYYY-MM-DD") });
+            });
         });
-        console.log(`Found ${developmentApplicationUrls.length} development applications at ${url}.`);
-
-        // Read and parse each development application URL, extracting the development application text.
-
-        for (let developmentApplicationUrl of developmentApplicationUrls) {
-            console.log(`Parsing: ${developmentApplicationUrl}`);
-
-            let developmentApplications = [];
-            let haveApplicationNumber = false;
-            let haveAddress = false;
-            let applicationNumber = null;
-            let address = null;
-            let reason = null;
-            let informationUrl = developmentApplicationUrl;
-            let commentUrl = CommentUrl;
-            let scrapeDate = moment().format("YYYY-MM-DD");
-            let lodgementDate = null;
-
-            developmentApplications.push({
-                applicationNumber: applicationNumber,
-                address: address,
-                reason: reason,
-                informationUrl: informationUrl,
-                commentUrl: commentUrl,
-                scrapeDate: scrapeDate,
-                lodgementDate: ((lodgementDate === null) ? null : lodgementDate.format("YYYY-MM-DD")) });
-
-            // Insert all the development applications that were found into the database as
-            // rows in a table.  If the same development application number already exists on
-            // a row then that existing row will not be replaced.
-
-            console.log(`Found ${developmentApplications.length} development application(s).`)
-            for (let developmentApplication of developmentApplications)
-                insertRow(database, developmentApplication);
-        }
     });
 }
 
