@@ -75,7 +75,7 @@ phantom.create().then(function(ph){
 }).then(function(page){
     _page = page;
     console.log("Here 2: " + url);
-    page.property('onResourceError', function(resourceError) {
+    page.on('onResourceError', function(resourceError) {
         page.reason = resourceError.errorString;
         page.reason_url = resourceError.url;
         console.log("ErrorTest: " + resourceError.errorString);
