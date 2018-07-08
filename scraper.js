@@ -10,7 +10,7 @@ let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
 let moment = require("moment");
 
-const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
+const DevelopmentApplicationsUrl = "http://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
 
 // Sets up an sqlite database.
