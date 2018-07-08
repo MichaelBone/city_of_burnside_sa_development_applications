@@ -55,7 +55,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    request.get({ uri: url, agentOptions: { secureProtocol: "TLSv1_2_client_method", strictSSL: false, rejectUnauthorized: false, ca: fs.readFileSync("Test.crt") } }, (error, response, body) => {
+    request.get({ uri: url, ca: fs.readFileSync("Test.crt"), cert: fs.readFileSync("Test.crt"), agentOptions: { secureProtocol: "TLSv1_2_client_method", strictSSL: false, rejectUnauthorized: false, ca: fs.readFileSync("Test.crt") } }, (error, response, body) => {
         if (error)
             console.log(`Error requesting page ${url}: ${error}`);
         else
