@@ -74,8 +74,8 @@ phantom.create().then(function(ph){
     return _ph.createPage();
 }).then(function(page){
     _page = page;
-    console.log("Here 2: " + url);
-    return _page.open(url);
+    console.log("Here 2: " + "http://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification");
+    return _page.open("http://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification");
 }).then(function(status){
     console.log("Here 3");
     console.log(status);
