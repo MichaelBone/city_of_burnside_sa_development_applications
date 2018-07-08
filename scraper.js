@@ -56,7 +56,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 function requestPage(url, callback) {
     console.log(`Requesting page: ${url}`);
-    https.get({ host: "www.burnside.sa.gov.au", path: "/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification", secureProtocol: "TLSv1_2_method" }, (error, response, body) => {
+    https.get({ host: "www.burnside.sa.gov.au", path: "/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification", secureProtocol: "TLSv1_1_method" }, (error, response, body) => {
         //callback(error);
         error.on('data', (d) => callback(d));
         // if (error)
