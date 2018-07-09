@@ -8,8 +8,7 @@
     "sqlite3": "^4.0.1",
     "url": "^0.11.0",
     "phantom": "latest",
-    "selenium-webdriver": "latest",
-    "puppeteer": "latest"
+    "selenium-webdriver": "latest"
   },
   "keywords": [
     "scraper",
