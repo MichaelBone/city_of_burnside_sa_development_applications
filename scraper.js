@@ -176,7 +176,15 @@ return;
 
 function function2() {
     console.log("Running function2");
-    initializeDatabase(run);
+    https.globalAgent.options.ca = sslRootCas;
+    https.get(DevelopmentApplicationsUrl, res => {
+        console.log('statusCode:', res.statusCode);
+        console.log('headers:', res.headers);
+        res.on('data', (d) => {
+            process.stdout.write(d);
+        });
+        initializeDatabase(run);
+    }).on('error', e => { console.log(e); });
 }
 
 setTimeout(function2, 15000);
