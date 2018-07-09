@@ -75,7 +75,7 @@ function run(database) {
     
     let options = new chrome.Options();
     options.addArguments("headless");
-    let driver = new webdriver.Builder().forBrowser('chrome').setChromeOptions(options).build();
+    let driver = new selenium.Builder().forBrowser('chrome').setChromeOptions(options).build();
     driver.get(url).then(function (result) {
         console.log("Have page.");
         console.log(result);
