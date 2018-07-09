@@ -9,7 +9,8 @@ let request = require("request");
 let sqlite3 = require("sqlite3").verbose();
 let urlparser = require("url");
 let moment = require("moment");
-let phantom = require("phantom");
+// let phantom = require("phantom");
+let selenium = require("selenium-webdriver");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -68,46 +69,48 @@ function run(database) {
     let parsedUrl = new urlparser.URL(url);
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
     
-phantom.create().then(function(ph){
-    _ph = ph;
-    console.log("Here 1");    
-    return _ph.createPage();
-}).then(function(page){
-    _page = page;
-    console.log("Here 2: " + url);
-    page.customHeaders = {
-        "Connection": "keep-alive"
-    };
-    page.on('onResourceError', function(resourceError) {
-        page.reason = resourceError.errorString;
-        page.reason_url = resourceError.url;
-        console.log("ErrorTest1: " + resourceError.errorString);
-        console.log("ErrorTest2: " + resourceError.url);
-    });
-    return _page.open(url,
-        function (status) {
-        if (status !== 'success') {
-            console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
-            phantom.exit(1);
-        } else {
-            console.log("Successful page open.");
-            phantom.exit(0);
-        }
-    });
-}).then(function(status){
-    console.log("Here 3");
-    console.log(status);
-    return _page.property('content')
-}).then(function(content){
-    console.log("Here 4");
-    console.log(content);
-    _page.close();
-    _ph.exit();
-}).catch(function(e){
-    console.log("Here 5");
-    console.log(e); 
-});
-console.log("Done.");
+    console.log("Testing using selenium.");
+    
+// phantom.create().then(function(ph){
+//     _ph = ph;
+//     console.log("Here 1");    
+//     return _ph.createPage();
+// }).then(function(page){
+//     _page = page;
+//     console.log("Here 2: " + url);
+//     page.customHeaders = {
+//         "Connection": "keep-alive"
+//     };
+//     page.on('onResourceError', function(resourceError) {
+//         page.reason = resourceError.errorString;
+//         page.reason_url = resourceError.url;
+//         console.log("ErrorTest1: " + resourceError.errorString);
+//         console.log("ErrorTest2: " + resourceError.url);
+//     });
+//     return _page.open(url,
+//         function (status) {
+//         if (status !== 'success') {
+//             console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
+//             phantom.exit(1);
+//         } else {
+//             console.log("Successful page open.");
+//             phantom.exit(0);
+//         }
+//     });
+// }).then(function(status){
+//    console.log("Here 3");
+//      console.log(status);
+//     return _page.property('content')
+// }).then(function(content){
+//     console.log("Here 4");
+//     console.log(content);
+//     _page.close();
+//     _ph.exit();
+// }).catch(function(e){
+//     console.log("Here 5");
+//     console.log(e); 
+// });
+// console.log("Done.");
 return;
     
     
