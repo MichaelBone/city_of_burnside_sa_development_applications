@@ -182,7 +182,7 @@ function function2() {
         port: 443,
         path: "Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification",
         method: "GET",
-        secureProtocol: "TLSv1_method"
+        secureProtocol: "TLSv1_3_method"
     };
     https.request(options, res => {
         console.log('statusCode:', res.statusCode);
