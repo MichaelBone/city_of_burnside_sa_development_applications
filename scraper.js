@@ -178,9 +178,9 @@ function function2() {
     console.log("Running function2");
     https.globalAgent.options.ca = sslRootCas;
     const options = {
-        hostname: "www.burnside.sa.gov.au",
+        hostname: "https://www.burnside.sa.gov.au",
         port: 443,
-        path: "Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification",
+        path: "/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification",
         method: "GET",
         secureProtocol: "TLSv1_method",
         rejectUnauthorized: false,
