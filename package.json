@@ -13,7 +13,8 @@
     "phantom": "latest",
     "selenium-webdriver": "latest",
     "puppeteer": "latest",
-    "https": "latest"
+    "https": "latest",
+    "ssl-root-cas": "latest"
   },
   "keywords": [
     "scraper",
