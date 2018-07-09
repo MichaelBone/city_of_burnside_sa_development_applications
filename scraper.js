@@ -13,9 +13,10 @@ let moment = require("moment");
 let selenium = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
 let puppeteer = require("puppeteer");
+let https = require("https");
 let sslRootCas = require('ssl-root-cas/latest').inject();
 
-require('https').globalAgent.options.ca = sslRootCas;
+https.globalAgent.options.ca = sslRootCas;
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -87,8 +88,8 @@ function run(database) {
     });
 
     puppeteer.launch({ headless: true, args: [ '--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--ignore-urlfetcher-cert-requests' ], ignoreHTTPSErrors: true }).then(function(browser) {
-        console.log("Here A0");
-        require('https').globalAgent.options.ca = sslRootCas;
+        // console.log("Here A0");
+        // require('https').globalAgent.options.ca = sslRootCas;
         console.log("Here A1");
         browser.newPage().then(function(page) {
             console.log("Here A2");
