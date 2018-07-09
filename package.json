@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "8.11.3"
-  }
+  },
   "main": "scraper.js",
   "dependencies": {
     "cheerio": "^0.22.0",
