@@ -185,7 +185,8 @@ function function2() {
         secureProtocol: "TLSv1_method",
         rejectUnauthorized: false,
         requestCert: true,
-        agent: false
+        agent: false,
+        headers: { 'User-Agent': 'Mozilla/5.0' }
     };
     https.request(options, res => {
         console.log('statusCode:', res.statusCode);
