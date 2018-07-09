@@ -11,6 +11,7 @@ let urlparser = require("url");
 let moment = require("moment");
 // let phantom = require("phantom");
 let selenium = require("selenium-webdriver");
+let puppeteer = required("puppeteer");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -70,6 +71,18 @@ function run(database) {
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
     
     console.log("Testing using selenium.");
+    
+    (async() => {
+        console.log("Here A");
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        console.log("Here B");
+        await page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'});
+        console.log("Here C");
+        await page.pdf({path: 'page.pdf', format: 'A4'});
+        console.log("Here D");
+        await browser.close();
+    })();
     
 // phantom.create().then(function(ph){
 //     _ph = ph;
