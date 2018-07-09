@@ -174,4 +174,11 @@ return;
     });
 }
 
-initializeDatabase(run);
+function function2() {
+    console.log("Running function2");
+    initializeDatabase(run);
+}
+
+setTimeout(function2, 15000);
+
+
