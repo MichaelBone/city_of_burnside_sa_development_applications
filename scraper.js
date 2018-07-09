@@ -12,7 +12,7 @@ let moment = require("moment");
 // let phantom = require("phantom");
 let selenium = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
-let puppeteer = required("puppeteer");
+let puppeteer = require("puppeteer");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
