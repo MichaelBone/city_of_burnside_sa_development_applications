@@ -4,6 +4,8 @@
 // Michael Bone
 // 8th July 2018
 
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 let cheerio = require("cheerio");
 let request = require("request");
 let sqlite3 = require("sqlite3").verbose();
@@ -69,8 +71,6 @@ function requestPage(url, callback) {
 }
 
 // Parses the page at the specified URL.
-
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 function run(database) {
     let url = DevelopmentApplicationsUrl;
