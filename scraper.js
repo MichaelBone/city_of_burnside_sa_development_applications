@@ -13,6 +13,7 @@ let moment = require("moment");
 let selenium = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
 let puppeteer = require("puppeteer");
+require('https').globalAgent.options.ca = require('ssl-root-cas/latest').create();
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -65,6 +66,8 @@ function requestPage(url, callback) {
 }
 
 // Parses the page at the specified URL.
+
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 function run(database) {
     let url = DevelopmentApplicationsUrl;
