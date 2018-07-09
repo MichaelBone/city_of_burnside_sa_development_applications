@@ -72,17 +72,17 @@ function run(database) {
     
     console.log("Testing using selenium.");
     
-    (async() => {
-        console.log("Here A");
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        console.log("Here B");
-        await page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'});
-        console.log("Here C");
-        await page.pdf({path: 'page.pdf', format: 'A4'});
-        console.log("Here D");
-        await browser.close();
-    })();
+    puppeteer.launch().then(function(browser) {
+        console.log("Here A1");
+        browser.newPage().then(function(page) {
+            console.log("Here A2");
+            page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'}).then(function(page) {
+                console.Log("Here A3");
+                page.pdf({path: 'page.pdf', format: 'A4'});
+            });
+        });
+    });
+
     
 // phantom.create().then(function(ph){
 //     _ph = ph;
