@@ -12,7 +12,8 @@
     "url": "^0.11.0",
     "phantom": "latest",
     "selenium-webdriver": "latest",
-    "puppeteer": "latest"
+    "puppeteer": "latest",
+    "https": "latest"
   },
   "keywords": [
     "scraper",
