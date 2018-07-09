@@ -13,7 +13,7 @@ let moment = require("moment");
 let selenium = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
 let puppeteer = require("puppeteer");
-let sslRootCas = require('ssl-root-cas/latest').create();
+let sslRootCas = require('ssl-root-cas/latest').inject();
 
 require('https').globalAgent.options.ca = sslRootCas;
 
