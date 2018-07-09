@@ -80,12 +80,12 @@ function run(database) {
         console.log("Have page.");
         console.log(result);
     });
-    
-    puppeteer.launch().then(function(browser) {
+
+    puppeteer.launch({ headless: true, args: [ "--no-sandbox" ], ignoreHTTPSErrors: true }).then(function(browser) {
         console.log("Here A1");
         browser.newPage().then(function(page) {
             console.log("Here A2");
-            page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'}).then(function(page) {
+            page.goto('https://www.chromestatus.com', { waitUntil: 'networkidle2' }).then(function(page) {
                 console.Log("Here A3");
                 page.pdf({path: 'page.pdf', format: 'A4'});
             });
@@ -133,7 +133,7 @@ function run(database) {
 //     console.log(e); 
 // });
 // console.log("Done.");
-// return;
+return;
     
     
     requestPage(url, body => {
