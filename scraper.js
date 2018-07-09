@@ -67,6 +67,7 @@ function run(database) {
     let parsedUrl = new urlparser.URL(url);
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
 
+    
     requestPage(url, body => {
         // Use cheerio to find all development applications listed in the page.
  
