@@ -11,6 +11,7 @@ let urlparser = require("url");
 let moment = require("moment");
 // let phantom = require("phantom");
 let selenium = require("selenium-webdriver");
+let chrome = require("selenium-webdriver/chrome");
 // let puppeteer = required("puppeteer");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
@@ -71,6 +72,14 @@ function run(database) {
     let baseUrl = parsedUrl.origin + parsedUrl.pathname;
     
     console.log("Testing using selenium.");
+    
+    let options = new chrome.Options();
+    options.addArguments("headless");
+    let driver = new webdriver.Builder().forBrowser('chrome').setChromeOptions(options).build();
+    driver.get(url).then(function (result) {
+        console.log("Have page.");
+        console.log(result);
+    });
     
     // puppeteer.launch().then(function(browser) {
     //     console.log("Here A1");
