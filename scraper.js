@@ -12,7 +12,7 @@ let moment = require("moment");
 // let phantom = require("phantom");
 let selenium = require("selenium-webdriver");
 let chrome = require("selenium-webdriver/chrome");
-// let puppeteer = required("puppeteer");
+let puppeteer = required("puppeteer");
 
 const DevelopmentApplicationsUrl = "https://www.burnside.sa.gov.au/Planning-Business/Planning-Development/Development-Applications/Development-Applications-on-Public-Notification";
 const CommentUrl = "mailto:burnside@burnside.sa.gov.au";
@@ -81,16 +81,16 @@ function run(database) {
         console.log(result);
     });
     
-    // puppeteer.launch().then(function(browser) {
-    //     console.log("Here A1");
-    //     browser.newPage().then(function(page) {
-    //         console.log("Here A2");
-    //         page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'}).then(function(page) {
-    //             console.Log("Here A3");
-    //             page.pdf({path: 'page.pdf', format: 'A4'});
-    //         });
-    //     });
-    // });
+    puppeteer.launch().then(function(browser) {
+        console.log("Here A1");
+        browser.newPage().then(function(page) {
+            console.log("Here A2");
+            page.goto('https://www.chromestatus.com', {waitUntil: 'networkidle2'}).then(function(page) {
+                console.Log("Here A3");
+                page.pdf({path: 'page.pdf', format: 'A4'});
+            });
+        });
+    });
 
     
 // phantom.create().then(function(ph){
