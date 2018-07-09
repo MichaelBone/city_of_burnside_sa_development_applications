@@ -81,7 +81,7 @@ function run(database) {
         console.log(result);
     });
 
-    puppeteer.launch({ headless: false, ignoreHTTPSErrors: true }).then(function(browser) {
+    puppeteer.launch({ headless: true, args: [ '--no-sandbox', '--disable-setuid-sandbox' ] ignoreHTTPSErrors: true }).then(function(browser) {
         console.log("Here A1");
         browser.newPage().then(function(page) {
             console.log("Here A2");
