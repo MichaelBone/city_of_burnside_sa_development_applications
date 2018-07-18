@@ -70,8 +70,6 @@ async function main() {
     let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY });
     let $ = cheerio.load(body);
 
-    console.log(process.env.MORPH_PROXY);
-    
     for (let element of $("div.list-container a").get()) {
         // Each development application is listed with a link to another page which has the
         // full development application details.
