@@ -57,18 +57,6 @@ async function insertRow(database, developmentApplication) {
     });
 }
 
-// Reads a page using a request.
-    
-function requestPage(url, callback) {
-    console.log(`Requesting page: ${url}`);
-    request(url, (error, response, body) => {
-        if (error)
-            console.log(`Error requesting page ${url}: ${error}`);
-        else
-            callback(body);
-    });
-}
-
 // Parses the page at the specified URL.
 
 async function main() {
@@ -79,36 +67,32 @@ async function main() {
     // Retrieve the main page.
 
     console.log(`Retrieving: ${DevelopmentApplicationsUrl}`);
-    let body = await request(DevelopmentApplicationsUrl);
+    let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY });
     let $ = cheerio.load(body);
 
-    await $("div.list-container a").each(async (index, element) => {
-        try {
-            // Each development application is listed with a link to another page which has the
-            // full development application details.
+    for (let element of $("div.list-container a").get()) {
+        // Each development application is listed with a link to another page which has the
+        // full development application details.
 
-            let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
-            let body = await request(developmentApplicationUrl);
-            let $ = cheerio.load(body);
+        let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
+        let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY });
+        let $ = cheerio.load(body);
 
-            // Extract the details of the development application from the development application
-            // page and then insert those details into the database as a row in a table.  Note that
-            // the selectors used below are based on those from the following scraper:
-            //
-            //     https://github.com/LoveMyData/burnside
+        // Extract the details of the development application from the development application
+        // page and then insert those details into the database as a row in a table.  Note that
+        // the selectors used below are based on those from the following scraper:
+        //
+        //     https://github.com/LoveMyData/burnside
 
-            await insertRow(database, {
-                applicationNumber: $("span.field-label:contains('Application number') ~ span.field-value").text().trim(),
-                address: $("span.field-label:contains('Address') ~ span.field-value").text().replace("View Map", "").trim(),
-                reason: $("span.field-label:contains('Nature of development') ~ span.field-value").text().trim(),
-                informationUrl: developmentApplicationUrl,
-                commentUrl: CommentUrl,
-                scrapeDate: moment().format("YYYY-MM-DD"),
-                onNoticeToDate: moment($("h2.side-box-title:contains('Closing Date') + div").text().split(',')[0].trim(), "D MMMM YYYY", true).format("YYYY-MM-DD") });
-        } catch (ex) {
-            console.error(ex);
-        }
-    });
+        await insertRow(database, {
+            applicationNumber: $("span.field-label:contains('Application number') ~ span.field-value").text().trim(),
+            address: $("span.field-label:contains('Address') ~ span.field-value").text().replace("View Map", "").trim(),
+            reason: $("span.field-label:contains('Nature of development') ~ span.field-value").text().trim(),
+            informationUrl: developmentApplicationUrl,
+            commentUrl: CommentUrl,
+            scrapeDate: moment().format("YYYY-MM-DD"),
+            onNoticeToDate: moment($("h2.side-box-title:contains('Closing Date') + div").text().split(',')[0].trim(), "D MMMM YYYY", true).format("YYYY-MM-DD") });
+    }
 }
 
 main().then(() => console.log("Complete.")).catch(error => console.error(error));
