@@ -93,14 +93,15 @@ async function main() {
     let $ = cheerio.load(body);
     await sleep(20000 + getRandom(0, 10) * 1000);
 
-    let count = 0;
-    for (let element of $("div.list-container a").get()) {
+    let index = 0;
+    let elements = $("div.list-container a").get();
+    for (let element of elements) {
         // Each development application is listed with a link to another page which has the
         // full development application details.
 
-        count++;
+        index++;
         let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
-        console.log(`Retrieving application ${index}: ${developmentApplicationUrl}`);
+        console.log(`Retrieving application ${index} of ${elements.length}: ${developmentApplicationUrl}`);
         let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
         let $ = cheerio.load(body);
         await sleep(2000 + getRandom(0, 10) * 1000);
