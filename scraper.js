@@ -57,6 +57,12 @@ async function insertRow(database, developmentApplication) {
     });
 }
 
+// Gets a random integer in the specified range: [minimum, maximum).
+
+function getRandom(minimum, maximum) {
+    return Math.floor(Math.random() * (Math.floor(maximum) - Math.ceil(minimum))) + Math.ceil(minimum);
+}
+
 // Parses the page at the specified URL.
 
 async function main() {
@@ -69,6 +75,7 @@ async function main() {
     console.log(`Retrieving: ${DevelopmentApplicationsUrl}`);
     let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY });
     let $ = cheerio.load(body);
+    await sleep(20000 + getRandom(0, 10) * 1000);
 
     for (let element of $("div.list-container a").get()) {
         // Each development application is listed with a link to another page which has the
@@ -77,6 +84,7 @@ async function main() {
         let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
         let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY });
         let $ = cheerio.load(body);
+        await sleep(2000 + getRandom(0, 5) * 1000);
 
         // Extract the details of the development application from the development application
         // page and then insert those details into the database as a row in a table.  Note that
