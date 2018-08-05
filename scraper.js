@@ -49,7 +49,9 @@ async function insertRow(database, developmentApplication) {
             }
             else {
                 if (this.changes > 0)
-                    console.log(`    Inserted new application \"${developmentApplication.applicationNumber}\" into the database.`);
+                    console.log(`    Inserted: application \"${developmentApplication.applicationNumber}\" with address \"${developmentApplication.address}\" and reason \"${developmentApplication.reason}\" into the database.`);
+                else
+                    console.log(`    Skipped: application \"${developmentApplication.applicationNumber}\" with address \"${developmentApplication.address}\" and reason \"${developmentApplication.reason}\" because it was already present in the database.`);
                 sqlStatement.finalize();  // releases any locks
                 resolve(row);
             }
@@ -78,7 +80,7 @@ async function main() {
 
     // Retrieve the main page.
 
-    console.log(`Retrieving: ${DevelopmentApplicationsUrl}`);
+    console.log(`Retrieving page: ${DevelopmentApplicationsUrl}`);
     let headers = {
         "Accept": "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8",
         "Accept-Encoding": "",
@@ -95,6 +97,9 @@ async function main() {
 
     let index = 0;
     let elements = $("div.list-container a").get();
+    if (elements.length === 0)
+        console.log(`No development applications were found on the page: ${DevelopmentApplicationsUrl}`);
+    
     for (let element of elements) {
         // Each development application is listed with a link to another page which has the
         // full development application details.
