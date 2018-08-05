@@ -79,18 +79,31 @@ async function main() {
     // Retrieve the main page.
 
     console.log(`Retrieving: ${DevelopmentApplicationsUrl}`);
-    let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY });
+    let headers = {
+        "Accept": "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-AU, en-US; q=0.7, en; q=0.3",
+        "Cache-Control": "max-age=0",
+        "DNT": "1",
+        "Host": "www.burnside.sa.gov.au",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
+    };
+    let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY, headers: headers });
     let $ = cheerio.load(body);
     await sleep(20000 + getRandom(0, 10) * 1000);
 
-    for (let element of $("div.list-container a").get()) {
+    let elements = $("div.list-container a").get();
+    for (let index = 0; index < elements.length; index++) {
         // Each development application is listed with a link to another page which has the
         // full development application details.
 
+        let element = elements[index];
         let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
-        let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY });
+        console.log(`Retrieving ${index} of ${element.length}: ${developmentApplicationUrl}`);
+        let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
         let $ = cheerio.load(body);
-        await sleep(2000 + getRandom(0, 5) * 1000);
+        await sleep(2000 + getRandom(0, 10) * 1000);
 
         // Extract the details of the development application from the development application
         // page and then insert those details into the database as a row in a table.  Note that
