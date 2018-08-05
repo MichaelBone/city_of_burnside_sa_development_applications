@@ -57,6 +57,12 @@ async function insertRow(database, developmentApplication) {
     });
 }
 
+// Pauses for the specified number of milliseconds.
+
+function sleep(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 // Gets a random integer in the specified range: [minimum, maximum).
 
 function getRandom(minimum, maximum) {
