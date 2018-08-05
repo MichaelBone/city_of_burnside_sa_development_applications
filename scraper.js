@@ -81,7 +81,7 @@ async function main() {
     console.log(`Retrieving: ${DevelopmentApplicationsUrl}`);
     let headers = {
         "Accept": "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Encoding": "",
         "Accept-Language": "en-AU, en-US; q=0.7, en; q=0.3",
         "Cache-Control": "max-age=0",
         "DNT": "1",
