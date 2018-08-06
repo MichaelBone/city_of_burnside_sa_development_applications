@@ -91,7 +91,7 @@ async function main() {
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
     };
-    let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY, headers: headers });
+    let body = await request({ url: DevelopmentApplicationsUrl, proxy: process.env.MORPH_PROXY, simple: false, headers: headers });
     let $ = cheerio.load(body);
     await sleep(20000 + getRandom(0, 10) * 1000);
 
