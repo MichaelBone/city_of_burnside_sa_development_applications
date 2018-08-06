@@ -80,14 +80,13 @@ async function main() {
 
     // Retrieve the main page.
 
-    // "Connection": "keep-alive",
-    
     console.log(`Retrieving page: ${DevelopmentApplicationsUrl}`);
     let headers = {
         "Accept": "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8",
         "Accept-Encoding": "",
         "Accept-Language": "en-AU, en-US; q=0.7, en; q=0.3",
         "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
         "DNT": "1",
         "Host": "www.burnside.sa.gov.au",
         "Upgrade-Insecure-Requests": "1",
@@ -109,35 +108,37 @@ async function main() {
         index++;
         let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
         console.log(`Retrieving application ${index} of ${elements.length}: ${developmentApplicationUrl}`);
-        let body = null;
+
         try {
-            body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
+            let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
+            let $ = cheerio.load(body);
+            await sleep(2000 + getRandom(0, 10) * 1000);
+
+            // Extract the details of the development application from the development application
+            // page and then insert those details into the database as a row in a table.  Note
+            // that the selectors used below are based on those from the following scraper:
+            //
+            //     https://github.com/LoveMyData/burnside
+
+            await insertRow(database, {
+                applicationNumber: $("span.field-label:contains('Application number') ~ span.field-value").text().trim(),
+                address: $("span.field-label:contains('Address') ~ span.field-value").text().replace("View Map", "").trim(),
+                reason: $("span.field-label:contains('Nature of development') ~ span.field-value").text().trim(),
+                informationUrl: developmentApplicationUrl,
+                commentUrl: CommentUrl,
+                scrapeDate: moment().format("YYYY-MM-DD"),
+                onNoticeToDate: moment($("h2.side-box-title:contains('Closing Date') + div").text().split(',')[0].trim(), "D MMMM YYYY", true).format("YYYY-MM-DD")
+            });
         } catch (error) {
+            // Ignore any failure and move on to the next application.
+            
             let proxy = process.env.MORPH_PROXY.trim();
             let index = proxy.indexOf("://");
             if (index >= 0)
                 proxy = proxy.substring(index + "://".length);
             let message = error.message.replace(proxy, "MORPH_PROXY");
-            console.log(`    Error: could not retrieve application ${element.attribs.href}: ${message}`);
-            continue;  // ignore the failure and move on to the next application
+            console.log(`    Error: could not retrieve ${element.attribs.href}: ${message}`);
         }
-        let $ = cheerio.load(body);
-        await sleep(2000 + getRandom(0, 10) * 1000);
-
-        // Extract the details of the development application from the development application
-        // page and then insert those details into the database as a row in a table.  Note that
-        // the selectors used below are based on those from the following scraper:
-        //
-        //     https://github.com/LoveMyData/burnside
-
-        await insertRow(database, {
-            applicationNumber: $("span.field-label:contains('Application number') ~ span.field-value").text().trim(),
-            address: $("span.field-label:contains('Address') ~ span.field-value").text().replace("View Map", "").trim(),
-            reason: $("span.field-label:contains('Nature of development') ~ span.field-value").text().trim(),
-            informationUrl: developmentApplicationUrl,
-            commentUrl: CommentUrl,
-            scrapeDate: moment().format("YYYY-MM-DD"),
-            onNoticeToDate: moment($("h2.side-box-title:contains('Closing Date') + div").text().split(',')[0].trim(), "D MMMM YYYY", true).format("YYYY-MM-DD") });
     }
 }
 
