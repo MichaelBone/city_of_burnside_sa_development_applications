@@ -111,10 +111,10 @@ async function main() {
         console.log(`Retrieving application ${index} of ${elements.length}: ${developmentApplicationUrl}`);
         let body = null;
         try {
-            body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers }, function(error, response, body) { if (error) console.log(error); });
+            body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
         } catch (error) {
-            console.log("Ignoring error.");
-            continue;
+            console.log(`Could not retrieve application ${element.attribs.href}: ${error.message}`);
+            continue;  // ignore the failure and move on to the next application
         }
         let $ = cheerio.load(body);
         await sleep(2000 + getRandom(0, 10) * 1000);
