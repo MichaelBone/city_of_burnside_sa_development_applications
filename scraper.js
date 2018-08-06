@@ -80,13 +80,14 @@ async function main() {
 
     // Retrieve the main page.
 
+    // "Connection": "keep-alive",
+    
     console.log(`Retrieving page: ${DevelopmentApplicationsUrl}`);
     let headers = {
         "Accept": "text/html, application/xhtml+xml, application/xml; q=0.9, */*; q=0.8",
         "Accept-Encoding": "",
         "Accept-Language": "en-AU, en-US; q=0.7, en; q=0.3",
         "Cache-Control": "max-age=0",
-        "Connection": "keep-alive",
         "DNT": "1",
         "Host": "www.burnside.sa.gov.au",
         "Upgrade-Insecure-Requests": "1",
@@ -108,7 +109,13 @@ async function main() {
         index++;
         let developmentApplicationUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl).href;
         console.log(`Retrieving application ${index} of ${elements.length}: ${developmentApplicationUrl}`);
-        let body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers }, function(error, response, body) { if (error) console.log(error); });
+        let body = null;
+        try {
+            body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers }, function(error, response, body) { if (error) console.log(error); });
+        } catch (error) {
+            console.log("Ignoring error.");
+            continue;
+        }
         let $ = cheerio.load(body);
         await sleep(2000 + getRandom(0, 10) * 1000);
 
