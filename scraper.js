@@ -113,8 +113,12 @@ async function main() {
         try {
             body = await request({ url: developmentApplicationUrl, proxy: process.env.MORPH_PROXY, headers: headers });
         } catch (error) {
-            let message = error.message.replace(process.env.MORPH_PROXY, "MORPH_PROXY");
-            console.log(`    Could not retrieve application ${element.attribs.href}: ${message}`);
+            let proxy = process.env.MORPH_PROXY.trim();
+            let index = proxy.indexOf("://");
+            if (index >= 0)
+                proxy = proxy.substring(index + "://".length);
+            let message = error.message.replace(proxy, "MORPH_PROXY");
+            console.log(`    Error: could not retrieve application ${element.attribs.href}: ${message}`);
             continue;  // ignore the failure and move on to the next application
         }
         let $ = cheerio.load(body);
