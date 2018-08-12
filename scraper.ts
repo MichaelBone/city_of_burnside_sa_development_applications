@@ -123,9 +123,23 @@ function findClosestElement(elements: Element[], text: string, direction: Direct
 
     let closestElement: Element = undefined;
     for (let element of elements)
-        if (closestElement === undefined || (isOverlap(matchingElement, element, direction) && calculateDistance(matchingElement, element, direction) < calculateDistance(matchingElement, closestElement, direction)))
-            closestElement = element;
+        if (element.text !== ":")  // ignore single colons (these are sometimes separate elements in text such as "Description:")
+            if (closestElement === undefined || (isOverlap(matchingElement, element, direction) && calculateDistance(matchingElement, element, direction) < calculateDistance(matchingElement, closestElement, direction)))
+                closestElement = element;
+                
     return closestElement;
+}
+
+// Gets the highest Y co-ordinate of all elements that are considered to be in the same row as
+// the specified element.
+
+function getRowTop(elements: Element[], startElement: Element) {
+    let top = Number.MAX_VALUE;
+    for (let element of elements)
+        if (element.y < startElement.y + startElement.height && element.y + element.height > startElement.y)
+            if (element.y < top)
+                top = element.y;
+    return top;
 }
 
 // Reads and parses development application details from the specified PDF.
@@ -154,11 +168,40 @@ async function parsePdf(url: string) {
             return { text: item.str, x: transform[4], y: transform[5], width: item.width, height: item.height };
         })
 
+
+
+
+        let applicationStartElements = elements.filter(element => element.text.startsWith("DA Number"));
+        let yComparer = (a, b) => (a.y > b.y) ? 1 : ((a.y < b.y) ? -1 : 0);
+        applicationStartElements.sort(yComparer);
+
+        let applicationElementGroups: Element[][] = [];
+        for (let index = 0; index < applicationStartElements.length; index++) {
+            // Determine the highest Y co-ordinate of this row and the next row.
+
+            let rowTop = getRowTop(elements, applicationStartElements[index]);
+            let nextRowTop = (index + 1 < applicationStartElements.length) ? getRowTop(elements, applicationStartElements[index + 1]) : Number.MAX_VALUE;
+
+            // Extract all elements between the two rows.
+
+            applicationElementGroups.push(elements.filter(element => element.y >= rowTop && element.y + element.height < nextRowTop));
+        }
+
+
+
+        // Sort by Y co-ordinate and then by X co-ordinate.
+
+        let elementComparer = (a, b) => (a.y > b.y) ? 1 : ((a.y < b.y) ? -1 : ((a.x > b.x) ? 1 : ((a.x < b.x) ? -1 : 0)));
+        elements.sort(elementComparer);
+
+for (let element of elements)
+    console.log(`[${element.text}] `);
+
         // Find the application number, reason, received date and address in the elements (based
         // on proximity to known text such as "Dev App No").
 
         let applicationNumberElement = findClosestElement(elements, "DA Number", Direction.Right);
-        let reasonElement = findClosestElement(elements, "Description:", Direction.Right);
+        let reasonElement = findClosestElement(elements, "Description", Direction.Right);
         let receivedDateElement = findClosestElement(elements, "Application Date", Direction.Right);
         let addressElement = findClosestElement(elements, "Property Address", Direction.Right);
 
