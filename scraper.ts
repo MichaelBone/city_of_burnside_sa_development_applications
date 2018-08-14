@@ -199,6 +199,7 @@ async function parsePdf(url: string) {
         let viewport = await page.getViewport(1.0);
         let elements: Element[] = textContent.items.map(item => {
             let transform = pdfjs.Util.transform(viewport.transform, item.transform, [ 1, 0, 0, -1, 0, 0 ]);
+            
             // Work around the issue https://github.com/mozilla/pdf.js/issues/8276 (heights are
             // exaggerated).  The problem seems to be that the height value is too large in some
             // PDFs.  Provide an alternative, more accurate height value by using a calculation
