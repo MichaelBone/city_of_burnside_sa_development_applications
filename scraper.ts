@@ -286,6 +286,8 @@ async function main() {
     selectedPdfUrls.push(pdfUrls.shift());
     if (pdfUrls.length > 0)
         selectedPdfUrls.push(pdfUrls[getRandom(1, pdfUrls.length)]);
+    if (getRandom(0, 2) === 0)
+        selectedPdfUrls.reverse();
 
     // Parse the most recent PDF file and randomly select one other PDF file.
 
